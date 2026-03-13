@@ -16,8 +16,6 @@ const SignUp = () => {
     e.preventDefault();
     try {
       const res = await axios.post("https://smartstep-backend.vercel.app/api/auth/signup", formData);
-      // Store user credentials in local storage
-      localStorage.setItem("userInfo", JSON.stringify(res.data)); 
       // Redirect to sign-in page after successful registration
       navigate("/signin"); 
     } catch (error) {
