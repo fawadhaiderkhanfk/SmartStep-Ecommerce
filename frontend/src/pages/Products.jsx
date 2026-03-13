@@ -86,20 +86,16 @@ const Products = () => {
     return (
       <div className="min-h-screen bg-slate-50 p-4 md:p-10">
         <div className="max-w-7xl mx-auto">
-          {/* Skeleton Header */}
           <div className="h-10 w-48 md:w-64 bg-slate-200 rounded-lg animate-pulse mb-4"></div>
           <div className="h-4 w-64 md:w-96 bg-slate-200 rounded animate-pulse mb-8"></div>
-          
-          {/* Skeleton Search & Filter Bar */}
+      
           <div className="h-16 w-full bg-slate-200 rounded-xl animate-pulse mb-6"></div>
           <div className="flex gap-4 mb-10 overflow-hidden">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="h-10 w-20 md:w-24 shrink-0 bg-slate-200 rounded-full animate-pulse"></div>
             ))}
           </div>
-
-          {/* Skeleton Product Grid (Updated for Mobile: 2, Tablet: 3, Laptop: 4) */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-8">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div key={i} className="bg-white rounded-2xl shadow-sm border border-slate-100 h-[300px] md:h-[420px] p-3 md:p-6 flex flex-col animate-pulse">
                 <div className="h-32 md:h-48 bg-slate-200 rounded-xl mb-4 md:mb-6 w-full"></div>
@@ -125,23 +121,18 @@ const Products = () => {
           Our Exclusive Collection
         </h1>
         <p className="text-slate-500 mb-6 md:mb-8 mt-2 text-sm md:text-base">Find the perfect pair for every step of your journey.</p>
-
-        {/* Enhanced Search & Filter Bar */}
         <div className="flex flex-col md:flex-row justify-between gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-          
-          {/* New Search Input with Icon */}
-          <div className="flex-1 relative">
+          <div className="flex-1 relative flex items-center">
             <input 
               type="text" 
               placeholder="Search shoes, sneakers, brands..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-3 pr-12 outline-none transition"
+              className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-3 pr-14 outline-none transition shadow-sm"
             />
-            {/* Search Icon Button */}
-            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-amber-500 p-2">
+            <button className="absolute right-1.5 bg-slate-900 text-amber-500 p-2 rounded-md hover:bg-slate-800 hover:text-amber-400 transition flex items-center justify-center shadow-sm">
                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                </svg>
             </button>
           </div>
@@ -178,7 +169,7 @@ const Products = () => {
         </div>
 
         {/* Updated Product Grid (Mobile: 2, Tablet: 3, Laptop: 4) */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-6">
           {finalProducts.map((product) => (
             <div key={product._id} className="bg-white rounded-2xl shadow-md overflow-hidden border border-slate-100 hover:shadow-xl transition-shadow duration-300 flex flex-col relative">
               
@@ -246,7 +237,6 @@ const Products = () => {
           ))}
         </div>
 
-        {/* Empty State / No Results */}
         {finalProducts.length === 0 && (
           <div className="text-center text-slate-500 mt-10 md:mt-20 p-6 md:p-10 bg-white rounded-2xl border border-slate-100">
             <span className="text-4xl md:text-5xl block mb-4">🔍</span>
