@@ -37,7 +37,7 @@ const Admin = () => {
 
   const fetchProducts = async () => {
     try {
-      const { data } = await axios.get("http://localhost:5000/api/products", getConfig());
+      const { data } = await axios.get("https://smartstep-backend.vercel.app/api/products", getConfig());
       setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -64,7 +64,7 @@ const Admin = () => {
 
     try {
       const config = { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${userInfo?.token}` } };
-      await axios.post("http://localhost:5000/api/products", formData, config);
+      await axios.post("https://smartstep-backend.vercel.app/api/products", formData, config);
       alert("Shoe Added Successfully to Smartstep!");
       
       // Clear form fields
@@ -90,7 +90,7 @@ const Admin = () => {
   // Handle saving updated product
   const handleUpdateSave = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/products/${id}`, editForm, getConfig());
+      await axios.put(`https://smartstep-backend.vercel.app/api/products/${id}`, editForm, getConfig());
       alert("Product Updated Successfully!");
       setEditingId(null);
       fetchProducts(); // Refresh the product list

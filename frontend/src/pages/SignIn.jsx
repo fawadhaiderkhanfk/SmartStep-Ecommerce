@@ -15,7 +15,7 @@ const SignIn = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/signin", formData);
+      const res = await axios.post("https://smartstep-backend.vercel.app/api/auth/signin", formData);
       // Store user credentials in local storage to maintain session
       localStorage.setItem("userInfo", JSON.stringify(res.data)); 
       navigate("/products");
@@ -28,7 +28,7 @@ const SignIn = () => {
   const handleGoogleSuccess = async (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse.credential);
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/google", {
+      const res = await axios.post("https://smartstep-backend.vercel.app/api/auth/google", {
         name: decoded.name,
         email: decoded.email,
         googleId: decoded.sub,

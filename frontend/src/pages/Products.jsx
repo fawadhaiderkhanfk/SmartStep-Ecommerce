@@ -30,7 +30,7 @@ const Products = () => {
         const userInfo = JSON.parse(localStorage.getItem("userInfo"));
         const config = { headers: { Authorization: `Bearer ${userInfo?.token}` } };
         
-        const { data } = await axios.get("http://localhost:5000/api/products", config);
+        const { data } = await axios.get("https://smartstep-backend.vercel.app/api/products", config);
         setProducts(data);
         setLoading(false);
       } catch (error) {

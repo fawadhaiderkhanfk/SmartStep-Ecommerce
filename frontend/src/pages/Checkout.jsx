@@ -21,7 +21,7 @@ const Checkout = () => {
       };
 
       await axios.post(
-        "http://localhost:5000/api/orders",
+        "https://smartstep-backend.vercel.app/api/orders",
         {
           orderItems: cart,
           paymentMethod: "Cash on Delivery",
