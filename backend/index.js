@@ -12,10 +12,16 @@ connectDB();
 const app = express();
 
 // Middleware
+// Adding Vercel URL to the allowed origins
 app.use(cors({
-    origin: "http://localhost:5173", // Allow requests from the React frontend
+    origin: [
+        "http://localhost:5173", 
+        "https://smart-step-ecommerce-l0kr75ek7-fawadhaiderkhanfks-projects.vercel.app",
+        "https://smart-step-ecommerce.vercel.app"
+    ], 
     credentials: true
 }));
+
 app.use(express.json());
 
 // Basic route to test if server is running
@@ -30,8 +36,9 @@ app.use("/api/orders", require("./routes/orderRoutes"));
 
 const PORT = process.env.PORT || 5000;
 
+// Vercel handles the port, but this is good for local testing
 app.listen(PORT, () => {
-    console.log(`Server running in development mode on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
 
 module.exports = app;
