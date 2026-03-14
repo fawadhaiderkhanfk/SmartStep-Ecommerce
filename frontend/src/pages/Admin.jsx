@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast"; 
 
 const Admin = () => {
-  const [activeTab, setActiveTab] = useState("add"); // Toggle between "add" and "manage" views
+  const [activeTab, setActiveTab] = useState("add"); 
   
   // --- ADD PRODUCT STATES ---
   const [title, setTitle] = useState("");
@@ -17,7 +18,7 @@ const Admin = () => {
 
   // --- MANAGE INVENTORY STATES ---
   const [products, setProducts] = useState([]);
-  const [editingId, setEditingId] = useState(null); // ID of the product currently being edited
+  const [editingId, setEditingId] = useState(null); 
   const [editForm, setEditForm] = useState({ stock: 0, isDiscounted: false, discountPrice: 0 });
 
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const Admin = () => {
     headers: { Authorization: `Bearer ${userInfo?.token}` }
   });
 
-  // Fetch all products for the Manage Inventory tab
+  // Fetch all products
   useEffect(() => {
     if (activeTab === "manage") {
       fetchProducts();
@@ -41,14 +42,15 @@ const Admin = () => {
       setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
+      toast.error("Failed to fetch inventory!");
     }
   };
 
-  // Handle new product submission
+  // --- HANDLE ADD PRODUCT ---
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     if (isDiscounted && Number(discountPrice) >= Number(price)) {
-      alert("Error: Discounted price must be lower than the original price!");
+      toast.error("Discounted price must be lower than original price!");
       return;
     }
 
@@ -62,22 +64,22 @@ const Admin = () => {
     formData.append("isDiscounted", isDiscounted);
     formData.append("discountPrice", isDiscounted ? discountPrice : 0);
 
+    const loadingToast = toast.loading("Uploading shoe to database...");
+
     try {
       const config = { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${userInfo?.token}` } };
       await axios.post("https://smartstep-backend.vercel.app/api/products", formData, config);
-      alert("Shoe Added Successfully to Smartstep!");
       
-      // Clear form fields
-      setTitle(""); setPrice(""); setStock(""); setImage(null); 
+      toast.success("Shoe Added Successfully! 👟", { id: loadingToast });
       
-      // Switch to manage tab after successful submission
+      setTitle(""); setDescription(""); setPrice(""); setStock(""); setImage(null); setIsDiscounted(false); setDiscountPrice("");
       setActiveTab("manage"); 
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to add product");
+      toast.error(error.response?.data?.message || "Failed to add product", { id: loadingToast });
     }
   };
 
-  // Handle edit button click
+  // --- HANDLE EDIT ---
   const handleEditClick = (product) => {
     setEditingId(product._id);
     setEditForm({
@@ -87,27 +89,45 @@ const Admin = () => {
     });
   };
 
-  // Handle saving updated product
+  // --- HANDLE UPDATE ---
   const handleUpdateSave = async (id) => {
+    const loadingToast = toast.loading("Updating product...");
     try {
       await axios.put(`https://smartstep-backend.vercel.app/api/products/${id}`, editForm, getConfig());
-      alert("Product Updated Successfully!");
+      toast.success("Product Updated Successfully!", { id: loadingToast });
       setEditingId(null);
-      fetchProducts(); // Refresh the product list
+      fetchProducts(); 
     } catch (error) {
-      alert("Error updating product");
+      toast.error("Error updating product", { id: loadingToast });
+    }
+  };
+
+  // --- HANDLE DELETE ---
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to permanently delete this shoe?");
+    if (!confirmDelete) return;
+
+    const loadingToast = toast.loading("Deleting product...");
+    try {
+      await axios.delete(`https://smartstep-backend.vercel.app/api/products/${id}`, getConfig());
+      
+      toast.success("Shoe removed from database! 🗑️", { id: loadingToast });
+      fetchProducts();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete product.", { id: loadingToast });
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-50 p-6 md:p-10">
-      <div className="max-w-5xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+      <div className="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-slate-200">
         
         <h2 className="text-3xl font-extrabold text-slate-800 mb-6 border-b pb-4">
           Admin Dashboard
         </h2>
 
-        {/* --- TABS --- */}
+        {/* TABS */}
         <div className="flex gap-4 mb-8">
           <button 
             onClick={() => setActiveTab("add")}
@@ -123,7 +143,7 @@ const Admin = () => {
           </button>
         </div>
 
-        {/* ================= TAB 1: ADD NEW SHOE ================= */}
+        {/* TAB 1: ADD NEW SHOE */}
         {activeTab === "add" && (
           <form onSubmit={handleAddSubmit} className="flex flex-col gap-5 max-w-2xl">
              <div>
@@ -181,7 +201,7 @@ const Admin = () => {
           </form>
         )}
 
-        {/* ================= TAB 2: MANAGE INVENTORY ================= */}
+        {/* TAB 2: MANAGE INVENTORY */}
         {activeTab === "manage" && (
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden">
@@ -191,8 +211,8 @@ const Admin = () => {
                   <th className="py-3 px-4 font-bold">Product Name</th>
                   <th className="py-3 px-4 font-bold">Price</th>
                   <th className="py-3 px-4 font-bold">Stock</th>
-                  <th className="py-3 px-4 font-bold">Sale / Discount</th>
-                  <th className="py-3 px-4 font-bold">Action</th>
+                  <th className="py-3 px-4 font-bold">Sale</th>
+                  <th className="py-3 px-4 font-bold text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -217,9 +237,9 @@ const Admin = () => {
                             <input type="number" value={editForm.discountPrice} onChange={(e) => setEditForm({...editForm, discountPrice: e.target.value})} className="w-20 border p-1 rounded text-sm" placeholder="Price" />
                           )}
                         </td>
-                        <td className="py-3 px-4">
-                          <button onClick={() => handleUpdateSave(product._id)} className="bg-green-500 text-white px-3 py-1 rounded font-bold hover:bg-green-600 mr-2">Save</button>
-                          <button onClick={() => setEditingId(null)} className="bg-red-500 text-white px-3 py-1 rounded font-bold hover:bg-red-600">Cancel</button>
+                        <td className="py-3 px-4 text-center">
+                          <button onClick={() => handleUpdateSave(product._id)} className="bg-green-500 text-white px-3 py-1 rounded font-bold hover:bg-green-600 mr-2 shadow-sm">Save</button>
+                          <button onClick={() => setEditingId(null)} className="bg-slate-500 text-white px-3 py-1 rounded font-bold hover:bg-slate-600 shadow-sm">Cancel</button>
                         </td>
                       </>
                     ) : (
@@ -233,9 +253,13 @@ const Admin = () => {
                         <td className="py-3 px-4">
                           {product.isDiscounted ? <span className="bg-red-500 text-white text-xs px-2 py-1 rounded font-bold">Rs. {product.discountPrice}</span> : <span className="text-slate-400 text-sm">No</span>}
                         </td>
-                        <td className="py-3 px-4">
-                          <button onClick={() => handleEditClick(product)} className="bg-amber-500 text-slate-900 px-4 py-1 rounded font-bold hover:bg-amber-400 shadow-sm">
+                        <td className="py-3 px-4 text-center">
+                          <button onClick={() => handleEditClick(product)} className="bg-amber-500 text-slate-900 px-4 py-1.5 rounded font-bold hover:bg-amber-400 shadow-sm mr-2 transition">
                             Edit
+                          </button>
+                          {/* DELETE BUTTON */}
+                          <button onClick={() => handleDelete(product._id)} className="bg-red-600 text-white px-3 py-1.5 rounded font-bold hover:bg-red-700 shadow-sm transition">
+                            Delete
                           </button>
                         </td>
                       </>
