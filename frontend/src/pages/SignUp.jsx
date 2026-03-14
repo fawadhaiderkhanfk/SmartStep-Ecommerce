@@ -12,15 +12,14 @@ const SignUp = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
- const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post("https://smartstep-backend.vercel.app/api/auth/signup", formData);
       
-      localStorage.removeItem("userInfo"); 
-      
+      localStorage.removeItem("userInfo");  
       alert("Registration Successful! Please Sign In to continue.");
-      navigate("/signin"); 
+      window.location.href = "/signin"; 
     } catch (error) {
       alert(error.response?.data?.message || "Sign Up Failed");
     }
