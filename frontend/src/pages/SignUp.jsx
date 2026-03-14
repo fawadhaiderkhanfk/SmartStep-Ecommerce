@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import toast from "react-hot-toast"; 
 
 const SignUp = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
@@ -16,12 +17,15 @@ const SignUp = () => {
     e.preventDefault();
     try {
       const res = await axios.post("https://smartstep-backend.vercel.app/api/auth/signup", formData);
-      
       localStorage.removeItem("userInfo");  
-      alert("Registration Successful! Please Sign In to continue.");
-      window.location.href = "/signin"; 
+      
+      toast.success("Registration Successful! Redirecting to Sign In...");
+      setTimeout(() => {
+        window.location.href = "/signin"; 
+      }, 1500);
+
     } catch (error) {
-      alert(error.response?.data?.message || "Sign Up Failed");
+      toast.error(error.response?.data?.message || "Sign Up Failed");
     }
   };
 
@@ -35,9 +39,11 @@ const SignUp = () => {
         googleId: decoded.sub,
       });
       localStorage.setItem("userInfo", JSON.stringify(res.data));
+      
+      toast.success("Google Login Successful! 🚀");
       navigate("/products");
     } catch (error) {
-      alert("Google Login Failed");
+      toast.error("Google Login Failed");
     }
   };
 
@@ -50,18 +56,18 @@ const SignUp = () => {
           <input type="text" name="name" placeholder="Full Name" onChange={handleChange} required className="border p-2 rounded" />
           <input type="email" name="email" placeholder="Email Address" onChange={handleChange} required className="border p-2 rounded" />
           <input type="password" name="password" placeholder="Password" onChange={handleChange} required className="border p-2 rounded" />
-          <button type="submit" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Sign Up</button>
+          <button type="submit" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition">Sign Up</button>
         </form>
 
         <div className="my-4 text-center text-gray-500">OR</div>
 
         {/* Google OAuth Component */}
         <div className="flex justify-center">
-          <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => alert("Login Failed")} />
+          <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => toast.error("Login Failed")} />
         </div>
 
         <p className="mt-4 text-center text-sm">
-          Already have an account? <Link to="/signin" className="text-blue-600 font-bold">Sign In</Link>
+          Already have an account? <Link to="/signin" className="text-blue-600 font-bold hover:underline">Sign In</Link>
         </p>
       </div>
     </div>
