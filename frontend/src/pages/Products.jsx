@@ -15,7 +15,6 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("newest"); 
 
-  // --- PAGINATION STATES ---
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8; 
 
@@ -31,6 +30,10 @@ const Products = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, selectedCategory, sortOrder]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage, selectedCategory]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -111,7 +114,6 @@ const Products = () => {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-8">
-            {/* 8 Skeletons for 8 products per page */}
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div key={i} className="bg-white rounded-2xl shadow-sm border border-slate-100 h-[300px] md:h-[420px] p-3 md:p-6 flex flex-col animate-pulse">
                 <div className="h-32 md:h-48 bg-slate-200 rounded-xl mb-4 md:mb-6 w-full"></div>
@@ -186,7 +188,7 @@ const Products = () => {
           ))}
         </div>
 
-        {/* Updated Product Grid - Now mapping currentProducts instead of finalProducts */}
+        {/* Product Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-6">
           {currentProducts.map((product) => (
             <div key={product._id} className="bg-white rounded-2xl shadow-md overflow-hidden border border-slate-100 hover:shadow-xl transition-shadow duration-300 flex flex-col relative">
@@ -259,7 +261,6 @@ const Products = () => {
           ))}
         </div>
 
-        {/* Empty State / No Results */}
         {currentProducts.length === 0 && (
           <div className="text-center text-slate-500 mt-10 md:mt-20 p-6 md:p-10 bg-white rounded-2xl border border-slate-100">
             <span className="text-4xl md:text-5xl block mb-4">🔍</span>
@@ -278,7 +279,6 @@ const Products = () => {
         {totalPages > 1 && (
           <div className="flex justify-center items-center mt-12 mb-8 gap-2">
             
-            {/* Previous Button */}
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
@@ -291,7 +291,6 @@ const Products = () => {
               Previous
             </button>
 
-            {/* Page Numbers */}
             <div className="flex gap-2 mx-2">
               {[...Array(totalPages)].map((_, i) => (
                 <button
@@ -308,7 +307,6 @@ const Products = () => {
               ))}
             </div>
 
-            {/* Next Button */}
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
