@@ -15,6 +15,10 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("newest"); 
 
+  // --- PAGINATION STATES ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 8; 
+
   const { addToCart } = useContext(CartContext);
   const { toggleWishlist, isInWishlist } = useContext(WishlistContext);
 
@@ -23,6 +27,10 @@ const Products = () => {
       setSelectedCategory(location.state.category);
     }
   }, [location.state]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory, sortOrder]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -81,6 +89,12 @@ const Products = () => {
 
   const finalProducts = getFilteredAndSortedProducts();
 
+  // --- PAGINATION LOGIC ---
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = finalProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(finalProducts.length / productsPerPage);
+
   // Skeleton Loading Screen
   if (loading) {
     return (
@@ -88,14 +102,16 @@ const Products = () => {
         <div className="max-w-7xl mx-auto">
           <div className="h-10 w-48 md:w-64 bg-slate-200 rounded-lg animate-pulse mb-4"></div>
           <div className="h-4 w-64 md:w-96 bg-slate-200 rounded animate-pulse mb-8"></div>
-      
+          
           <div className="h-16 w-full bg-slate-200 rounded-xl animate-pulse mb-6"></div>
           <div className="flex gap-4 mb-10 overflow-hidden">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="h-10 w-20 md:w-24 shrink-0 bg-slate-200 rounded-full animate-pulse"></div>
             ))}
           </div>
+
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-8">
+            {/* 8 Skeletons for 8 products per page */}
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div key={i} className="bg-white rounded-2xl shadow-sm border border-slate-100 h-[300px] md:h-[420px] p-3 md:p-6 flex flex-col animate-pulse">
                 <div className="h-32 md:h-48 bg-slate-200 rounded-xl mb-4 md:mb-6 w-full"></div>
@@ -115,13 +131,16 @@ const Products = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-10">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-slate-50 p-4 md:p-10 flex flex-col">
+      <div className="max-w-7xl mx-auto flex-grow w-full">
         <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-2 border-b-4 border-amber-500 inline-block pb-2">
           Our Exclusive Collection
         </h1>
         <p className="text-slate-500 mb-6 md:mb-8 mt-2 text-sm md:text-base">Find the perfect pair for every step of your journey.</p>
+
+        {/* Enhanced Search & Filter Bar */}
         <div className="flex flex-col md:flex-row justify-between gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+          
           <div className="flex-1 relative flex items-center">
             <input 
               type="text" 
@@ -137,7 +156,6 @@ const Products = () => {
             </button>
           </div>
 
-          {/* Sort Dropdown */}
           <div className="w-full md:w-64">
             <select 
               value={sortOrder}
@@ -168,9 +186,9 @@ const Products = () => {
           ))}
         </div>
 
-        {/* Updated Product Grid (Mobile: 2, Tablet: 3, Laptop: 4) */}
+        {/* Updated Product Grid - Now mapping currentProducts instead of finalProducts */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-6">
-          {finalProducts.map((product) => (
+          {currentProducts.map((product) => (
             <div key={product._id} className="bg-white rounded-2xl shadow-md overflow-hidden border border-slate-100 hover:shadow-xl transition-shadow duration-300 flex flex-col relative">
               
               {product.isDiscounted && (
@@ -203,7 +221,11 @@ const Products = () => {
                   )}
                 </div>
 
-                <p className="text-slate-600 text-xs md:text-sm mb-4 flex-grow mt-2">{product.description && product.description.length > 40? product.description.substring(0, 40) + "..."  : product.description}</p>
+                <p className="text-slate-600 text-xs md:text-sm mb-4 flex-grow mt-2">
+                  {product.description && product.description.length > 90 
+                    ? product.description.substring(0, 90) + "..." 
+                    : product.description}
+                </p>
                 
                 <div className="flex flex-col md:flex-row justify-between items-center mt-2 pt-2 md:mt-4 md:pt-4 border-t border-slate-100 gap-2 md:gap-0">
                   <div className="flex flex-row md:flex-col items-center md:items-start gap-2 md:gap-0 w-full md:w-auto justify-center">
@@ -237,16 +259,66 @@ const Products = () => {
           ))}
         </div>
 
-        {finalProducts.length === 0 && (
+        {/* Empty State / No Results */}
+        {currentProducts.length === 0 && (
           <div className="text-center text-slate-500 mt-10 md:mt-20 p-6 md:p-10 bg-white rounded-2xl border border-slate-100">
             <span className="text-4xl md:text-5xl block mb-4">🔍</span>
             <h3 className="text-xl md:text-2xl font-bold text-slate-800">No matching shoes found</h3>
             <p className="text-slate-500 mt-2 text-sm md:text-base">Try searching for a different keyword or category.</p>
             <button 
-              onClick={() => { setSearchQuery(""); setSelectedCategory("All"); }}
+              onClick={() => { setSearchQuery(""); setSelectedCategory("All"); setCurrentPage(1); }}
               className="mt-6 bg-slate-900 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-800 transition text-sm md:text-base"
             >
               Clear Filters
+            </button>
+          </div>
+        )}
+
+        {/* PAGINATION CONTROLS */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center mt-12 mb-8 gap-2">
+            
+            {/* Previous Button */}
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 rounded-lg font-bold transition text-sm md:text-base ${
+                currentPage === 1 
+                ? 'bg-slate-200 text-slate-400 cursor-not-allowed' 
+                : 'bg-slate-900 text-white hover:bg-slate-800 shadow-md'
+              }`}
+            >
+              Previous
+            </button>
+
+            {/* Page Numbers */}
+            <div className="flex gap-2 mx-2">
+              {[...Array(totalPages)].map((_, i) => (
+                <button
+                  key={i + 1}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`w-10 h-10 rounded-lg font-bold transition flex items-center justify-center shadow-sm text-sm md:text-base ${
+                    currentPage === i + 1 
+                    ? 'bg-amber-500 text-slate-900 scale-110' 
+                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+
+            {/* Next Button */}
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className={`px-4 py-2 rounded-lg font-bold transition text-sm md:text-base ${
+                currentPage === totalPages 
+                ? 'bg-slate-200 text-slate-400 cursor-not-allowed' 
+                : 'bg-slate-900 text-white hover:bg-slate-800 shadow-md'
+              }`}
+            >
+              Next
             </button>
           </div>
         )}
