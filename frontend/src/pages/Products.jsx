@@ -203,7 +203,7 @@ const Products = () => {
                   )}
                 </div>
 
-                <p className="text-slate-600 text-xs md:text-sm mb-4 flex-grow mt-2">{product.description && product.description.length > 90 ? product.description.substring(0, 90) + "..."  : product.description}</p>
+                <p className="text-slate-600 text-xs md:text-sm mb-4 flex-grow mt-2">{product.description && product.description.length > 40? product.description.substring(0, 40) + "..."  : product.description}</p>
                 
                 <div className="flex flex-col md:flex-row justify-between items-center mt-2 pt-2 md:mt-4 md:pt-4 border-t border-slate-100 gap-2 md:gap-0">
                   <div className="flex flex-row md:flex-col items-center md:items-start gap-2 md:gap-0 w-full md:w-auto justify-center">
