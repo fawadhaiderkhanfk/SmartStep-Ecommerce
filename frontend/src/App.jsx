@@ -14,10 +14,21 @@ import Checkout from "./pages/Checkout";
 import MyOrders from "./pages/MyOrders";
 import Wishlist from "./pages/Wishlist"; 
 
-// Custom wrapper to protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
   const userInfo = localStorage.getItem("userInfo");
-  return userInfo ? children : <Navigate to="/signin" />;
+  return userInfo ? children : <Navigate to="/signin" replace />;
+};
+
+const AdminRoute = ({ children }) => {
+  const userInfoString = localStorage.getItem("userInfo");
+  
+  if (userInfoString) {
+    const userInfo = JSON.parse(userInfoString);
+    if (userInfo.role === "admin") {
+      return children;
+    }
+  }
+  return <Navigate to="/" replace />;
 };
 
 function App() {
@@ -34,15 +45,17 @@ function App() {
             
             <main className="flex-grow">
               <Routes>
-                <Route path="/" element={<Home />} /> 
+                <Route path="/" element={<Home />} />  
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
                 <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} /> 
-                <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                 <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
                 <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
                 <Route path="/myorders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
+
+                <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+                
               </Routes>
             </main>
             
