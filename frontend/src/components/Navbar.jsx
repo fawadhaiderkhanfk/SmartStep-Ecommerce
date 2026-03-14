@@ -10,22 +10,19 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("userInfo");
     navigate("/signin");
-    setIsMenuOpen(false);
+    setIsMenuOpen(false); 
   };
 
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <nav className="bg-slate-900 text-white p-4 shadow-lg">
-      <div className="max-w-6xl mx-auto">
+    <nav className="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center">
-          
-          {/* Brand Logo */}
           <Link to="/" onClick={closeMenu} className="text-2xl font-bold text-amber-500 tracking-wider">
             SMARTSTEP
           </Link>
 
-          {/* Hamburger Button */}
           <button 
             className="md:hidden text-amber-500 hover:text-amber-400 focus:outline-none"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -50,6 +47,11 @@ const Navbar = () => {
               </>
             ) : (
               <>
+
+                <span className="text-amber-400 font-bold tracking-wide border-r border-slate-600 pr-4 flex items-center gap-2">
+                  👋 Welcome, {userInfo?.name?.split(" ")[0]}!
+                </span>
+
                 <Link to="/products" className="hover:text-amber-400 transition">Products</Link>
                 <Link to="/wishlist" className="hover:text-amber-400 transition">Wishlist ❤️</Link> 
                 <Link to="/cart" className="hover:text-amber-400 transition">Cart 🛒</Link>
@@ -61,7 +63,7 @@ const Navbar = () => {
                 
                 <button 
                   onClick={handleLogout} 
-                  className="bg-red-600 px-4 py-2 rounded font-bold hover:bg-red-500 transition"
+                  className="bg-red-600 px-4 py-2 rounded font-bold hover:bg-red-500 transition shadow-md"
                 >
                   Logout
                 </button>
@@ -69,31 +71,36 @@ const Navbar = () => {
             )}
           </div>
         </div>
-
-        {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
-          <div className="md:hidden flex flex-col gap-4 mt-4 bg-slate-800 p-4 rounded-lg border border-slate-700 transition-all duration-300">
+          <div className="md:hidden flex flex-col gap-4 mt-4 bg-slate-800 p-4 rounded-lg border border-slate-700 transition-all duration-300 shadow-xl">
+          
+            {userInfo && (
+              <div className="text-amber-400 font-bold text-center text-lg border-b border-slate-600 pb-3 mb-1">
+                👋 Welcome, {userInfo.name}!
+              </div>
+            )}
+
             {!userInfo ? (
               <>
-                <Link to="/signin" onClick={closeMenu} className="block hover:text-amber-400 transition py-2 border-b border-slate-700">Sign In</Link>
+                <Link to="/signin" onClick={closeMenu} className="block text-center hover:text-amber-400 transition py-2 border-b border-slate-700">Sign In</Link>
                 <Link to="/signup" onClick={closeMenu} className="block bg-amber-500 text-center text-slate-900 px-4 py-2 rounded font-bold hover:bg-amber-400 transition mt-2">
                   Sign Up
                 </Link>
               </>
             ) : (
               <>
-                <Link to="/products" onClick={closeMenu} className="block hover:text-amber-400 transition py-2 border-b border-slate-700">Products</Link>
-                <Link to="/wishlist" onClick={closeMenu} className="block hover:text-amber-400 transition py-2 border-b border-slate-700">Wishlist ❤️</Link> 
-                <Link to="/cart" onClick={closeMenu} className="block hover:text-amber-400 transition py-2 border-b border-slate-700">Cart 🛒</Link>
-                <Link to="/myorders" onClick={closeMenu} className="block hover:text-amber-400 transition py-2 border-b border-slate-700">My Orders</Link>
+                <Link to="/products" onClick={closeMenu} className="block text-center hover:text-amber-400 transition py-2 border-b border-slate-700">Products</Link>
+                <Link to="/wishlist" onClick={closeMenu} className="block text-center hover:text-amber-400 transition py-2 border-b border-slate-700">Wishlist ❤️</Link> 
+                <Link to="/cart" onClick={closeMenu} className="block text-center hover:text-amber-400 transition py-2 border-b border-slate-700">Cart 🛒</Link>
+                <Link to="/myorders" onClick={closeMenu} className="block text-center hover:text-amber-400 transition py-2 border-b border-slate-700">My Orders</Link>
                 
                 {userInfo.role === "admin" && (
-                  <Link to="/admin" onClick={closeMenu} className="block text-red-400 hover:text-red-300 font-bold py-2 border-b border-slate-700">Admin Panel</Link>
+                  <Link to="/admin" onClick={closeMenu} className="block text-center text-red-400 hover:text-red-300 font-bold py-2 border-b border-slate-700">Admin Panel</Link>
                 )}
                 
                 <button 
                   onClick={handleLogout} 
-                  className="bg-red-600 w-full px-4 py-2 mt-2 rounded font-bold hover:bg-red-500 transition"
+                  className="bg-red-600 w-full px-4 py-2 mt-2 rounded font-bold hover:bg-red-500 transition shadow-md"
                 >
                   Logout
                 </button>
